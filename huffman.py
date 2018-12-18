@@ -52,6 +52,7 @@ def build_huffman_tree(frequencies):
 huffman_codes = []
 
 def set_code(node):
+  global huffman_codes
   if node.left is None and node.right is None:
     huffman_codes.append(node)
     return
@@ -63,10 +64,45 @@ def set_code(node):
     node.right.code = node.code + "1"
     set_code(node.right)
 
-frequencies = count_characters("bee_movie_script.txt")
-root = build_huffman_tree(frequencies)
-set_code(root)
-huffman_codes.sort()
-huffman_codes = reversed(huffman_codes)
-for h in huffman_codes:
-  print(h)
+def get_huffman_codes(filename):
+  global huffman_codes
+  frequencies = count_characters(filename )
+  root = build_huffman_tree(frequencies)
+  set_code(root)
+  huffman_codes.sort()
+  huffman_codes = reversed(huffman_codes)
+  huffman_codes_dict = {}
+  for h in huffman_codes:
+    huffman_codes_dict[h.byte] = h.code
+  return huffman_codes_dict
+
+def bitstring_to_byte(s):
+  return int(s, 2)
+
+def compress(filename, codes):
+  with open(filename, "rb") as file:
+    try:
+      data = file.read()
+    finally:
+      file.close()
+
+  binary_str = ''
+  for byte in data:
+    binary_str += codes[byte]
+
+  temp_str = ''
+  bytes_data = []
+  for bit in binary_str:
+    temp_str += bit
+    if len(temp_str) == 8:
+      bytes_data.append(bitstring_to_byte(temp_str))
+      temp_str = '' 
+
+  with open(filename + ".compressed", "wb") as file:
+    file.write(bytearray(bytes_data))
+    
+
+
+filename = "CC371_Algorithms_Tut4.pdf"
+codes = get_huffman_codes(filename)
+compress(filename, codes)
