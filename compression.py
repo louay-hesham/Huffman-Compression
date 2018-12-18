@@ -1,18 +1,5 @@
 from heapq import *
-
-class Frequency:
-  def __init__(self, byte, freq, left, right):
-    self.byte = byte
-    self.freq = freq
-    self.left = left
-    self.right = right
-    self.code = ''
-
-  def __lt__(self, other):
-    return self.freq < other.freq
-
-  def __str__(self):
-    return "(" + str(self.byte) + ": " + str(self.freq) + ", " + self.code + ")"
+from frequency import Frequency
 
 def count_characters(filename):
   with open(filename, "rb") as file:
@@ -49,37 +36,30 @@ def build_huffman_tree(frequencies):
 
   return heappop(min_heap)
 
-huffman_codes = []
-
-def set_code(node):
-  global huffman_codes
+def set_code(node, codes_dict):
   if node.left is None and node.right is None:
-    huffman_codes.append(node)
+    codes_dict[node.byte] = node.code
     return
 
   if node.left is not None:
     node.left.code = node.code + "0"
-    set_code(node.left)
+    set_code(node.left, codes_dict)
   if node.right is not None:
     node.right.code = node.code + "1"
-    set_code(node.right)
+    set_code(node.right, codes_dict)
 
 def get_huffman_codes(filename):
-  global huffman_codes
   frequencies = count_characters(filename )
   root = build_huffman_tree(frequencies)
-  set_code(root)
-  huffman_codes.sort()
-  huffman_codes = reversed(huffman_codes)
   huffman_codes_dict = {}
-  for h in huffman_codes:
-    huffman_codes_dict[h.byte] = h.code
+  set_code(root, huffman_codes_dict)
   return huffman_codes_dict
 
 def bitstring_to_byte(s):
   return int(s, 2)
 
-def compress(filename, codes):
+def compress(filename):
+  codes = get_huffman_codes(filename)
   with open(filename, "rb") as file:
     try:
       data = file.read()
@@ -101,8 +81,3 @@ def compress(filename, codes):
   with open(filename + ".compressed", "wb") as file:
     file.write(bytearray(bytes_data))
     
-
-
-filename = "CC371_Algorithms_Tut4.pdf"
-codes = get_huffman_codes(filename)
-compress(filename, codes)
