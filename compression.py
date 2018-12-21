@@ -67,6 +67,12 @@ def create_header(codes):
 
 def compress(filename):
   codes = get_huffman_codes(filename)
+  print("Byte\t\tOld Code\tNew Code")
+  for key, value in codes.items():
+    print(str(key) + "\t\t" +  "{0:b}".format(key) + "\t\t" + value)
+
+  print("\n")
+
   with open(filename, "rb") as file:
     try:
       data = file.read()

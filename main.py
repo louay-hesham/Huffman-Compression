@@ -1,6 +1,7 @@
 from compression import compress
 from decompression import decompress
 
+compress("bee_movie_script.txt")
 decompress("bee_movie_script.txt.compressed")
 
 # while True:
