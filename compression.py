@@ -78,6 +78,8 @@ def compress(filename):
       bytes_data.append(bitstring_to_byte(temp_str))
       temp_str = '' 
 
+  c_ratio = len(bytes_data) / len(data)
+  print("Compression ratio = " + str(c_ratio * 100) + "%")
   with open(filename + ".compressed", "wb") as file:
     file.write(bytearray(bytes_data))
     
