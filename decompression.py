@@ -18,8 +18,42 @@ def decode_file(filename):
     codes = decode_header_data(header)
     return codes, actual_data
 
+def byte_to_binary(byte):
+  return format(byte,'08b')
+
+def get_binary_string(codes, data):
+  binary_str = ''
+  for byte in data:
+    binary_str += byte_to_binary(byte)
+  return binary_str
+
+def decode_binary_str(codes, binary_str):
+  i = 0
+  j = 1
+  decoded_data = []
+  while j < len(binary_str):
+    temp_str = binary_str[i:j]
+    if temp_str in codes:
+      decoded_data.append(int(codes[temp_str]))
+      i = j
+      j += 1
+    else:
+      j += 1
+
+  return bytearray(decoded_data)
 
 def decompress(filename):
   codes, data = decode_file(filename)
-  print(codes)
-  # Decompress and write to new file here
+  binary_str = get_binary_string(codes, data)
+  decoded_data = decode_binary_str(codes, binary_str)
+
+  if filename.split('.')[-1] == 'compressed':
+    filename = (filename.split('.')[:-1])
+    filename.append('decompressed')
+    filename = '.'.join(filename)
+  else:
+    filename += '.decompressed'
+
+  with open(filename, 'wb') as file:
+    file.write(decoded_data)
+    file.close()
