@@ -1,6 +1,7 @@
 from compression import compress
+from decompression import decompress
 
-compress("bee_movie_script.txt")
+decompress("bee_movie_script.txt.compressed")
 
 # while True:
 #   print("Choose an option:")
@@ -12,9 +13,8 @@ compress("bee_movie_script.txt")
 #     filename = input("Enter filename: ")
 #     compress(filename)
 #   elif choice == '2':
-#     print("Not implemented yet")
-#     # filename = input("Enter filename: ")
-#     # decompress(filename)
+#     filename = input("Enter filename: ")
+#     decompress(filename)
 #   elif choice == '0':
 #     break
 #   else:

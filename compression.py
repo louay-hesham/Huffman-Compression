@@ -58,6 +58,13 @@ def get_huffman_codes(filename):
 def bitstring_to_byte(s):
   return int(s, 2)
 
+def create_header(codes):
+  header = ''
+  for key, value in codes.items():
+    header += (str(key) + ':' + value + '#')
+  header += '~'
+  return bytearray(header.encode())
+
 def compress(filename):
   codes = get_huffman_codes(filename)
   with open(filename, "rb") as file:
@@ -78,8 +85,10 @@ def compress(filename):
       bytes_data.append(bitstring_to_byte(temp_str))
       temp_str = '' 
 
-  c_ratio = len(bytes_data) / len(data)
+  header = create_header(codes)
+  c_ratio = (len(bytes_data) + len(header)) / len(data)
   print("Compression ratio = " + str(c_ratio * 100) + "%")
   with open(filename + ".compressed", "wb") as file:
+    file.write(header)
     file.write(bytearray(bytes_data))
     
