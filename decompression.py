@@ -1,3 +1,4 @@
+import time
 
 def decode_header_data(header):
   header_str = header.decode()
@@ -43,6 +44,7 @@ def decode_binary_str(codes, binary_str):
   return bytearray(decoded_data)
 
 def decompress(filename):
+  t1 = time.time() * 1000
   codes, data = decode_file(filename)
   binary_str = get_binary_string(codes, data)
   decoded_data = decode_binary_str(codes, binary_str)
@@ -57,3 +59,5 @@ def decompress(filename):
   with open(filename, 'wb') as file:
     file.write(decoded_data)
     file.close()
+  t2 = time.time() * 1000
+  print("Time elapsed: " + str(t2 - t1) + " ms")

@@ -1,5 +1,6 @@
 from heapq import *
 from frequency import Frequency
+import time
 
 def count_characters(filename):
   with open(filename, "rb") as file:
@@ -66,6 +67,7 @@ def create_header(codes):
   return bytearray(header.encode())
 
 def compress(filename):
+  t1 = time.time() * 1000
   codes = get_huffman_codes(filename)
   print("Byte\t\tOld Code\tNew Code")
   for key, value in codes.items():
@@ -97,4 +99,7 @@ def compress(filename):
   with open(filename + ".compressed", "wb") as file:
     file.write(header)
     file.write(bytearray(bytes_data))
+    file.close()
+  t2 = time.time() * 1000
+  print("Time elapsed: " + str(t2 - t1) + " ms")
     
