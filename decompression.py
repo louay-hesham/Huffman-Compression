@@ -22,4 +22,26 @@ def decode_file(filename):
 def decompress(filename):
   codes, data = decode_file(filename)
   print(codes)
-  # Decompress and write to new file here
+  print(data)
+  # Decompress and write to
+  compressed_text=""
+  n = len(data)
+  for t in data:
+    if n == 1:
+      compressed_text += '{0:b}'.format(t)
+      break
+    compressed_text += '{0:08b}'.format(t)
+    n -= 1
+    return compressed_text
+
+def decode(compressed_text,codes):
+  sub=[]
+  out=[]
+  x=0
+  for y in range(len(compressed_text)):
+      sub=compressed_text[x : y]
+      if sub in codes:
+          out.append(codes.get(sub))
+          x=y
+  print(out)
+

@@ -97,4 +97,7 @@ def compress(filename):
   with open(filename + ".compressed", "wb") as file:
     file.write(header)
     file.write(bytearray(bytes_data))
+
+
+
     
