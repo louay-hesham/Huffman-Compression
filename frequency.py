@@ -10,4 +10,4 @@ class Frequency:
     return self.freq < other.freq
 
   def __str__(self):
-    return "(" + str(self.byte) + ": " + str(self.freq) + ", " + self.code + ")"
+    return str(self.byte) + "\t\t" + str(self.freq) + "\t\t" + format(self.byte,'08b') + "\t" + self.code

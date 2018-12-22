@@ -54,6 +54,11 @@ def get_huffman_codes(filename):
   root = build_huffman_tree(frequencies)
   huffman_codes_dict = {}
   set_code(root, huffman_codes_dict)
+  print("\n\nByte\t\tFrequency\tOld Code\tNew Code")
+  frequencies.sort()
+  for f in frequencies[::-1]:
+    print(f)
+  print("\n")
   return huffman_codes_dict
 
 def bitstring_to_byte(s):
@@ -69,11 +74,6 @@ def create_header(codes, bits_length):
 def compress(filename):
   t1 = time.time() * 1000
   codes = get_huffman_codes(filename)
-  print("Byte\t\tOld Code\t\tNew Code")
-  for key, value in codes.items():
-    print(str(key) + "\t\t" +  format(key,'08b') + "\t\t" + value)
-
-  print("\n")
 
   with open(filename, "rb") as file:
     try:
