@@ -59,8 +59,8 @@ def get_huffman_codes(filename):
 def bitstring_to_byte(s):
   return int(s, 2)
 
-def create_header(codes):
-  header = ''
+def create_header(codes, bits_length):
+  header = str(bits_length) + ';'
   for key, value in codes.items():
     header += (str(key) + ':' + value + '#')
   header += '~'
@@ -69,9 +69,9 @@ def create_header(codes):
 def compress(filename):
   t1 = time.time() * 1000
   codes = get_huffman_codes(filename)
-  print("Byte\t\tOld Code\tNew Code")
+  print("Byte\t\tOld Code\t\tNew Code")
   for key, value in codes.items():
-    print(str(key) + "\t\t" +  "{0:b}".format(key) + "\t\t" + value)
+    print(str(key) + "\t\t" +  format(key,'08b') + "\t\t" + value)
 
   print("\n")
 
@@ -92,8 +92,10 @@ def compress(filename):
     if len(temp_str) == 8:
       bytes_data.append(bitstring_to_byte(temp_str))
       temp_str = '' 
+  if len(temp_str) < 8:
+    bytes_data.append(bitstring_to_byte(temp_str + '0'*(8 - len(temp_str))))
 
-  header = create_header(codes)
+  header = create_header(codes, len(binary_str))
   c_ratio = (len(bytes_data) + len(header)) / len(data)
   print("Compression ratio = " + str(c_ratio * 100) + "%")
   with open(filename + ".compressed", "wb") as file:

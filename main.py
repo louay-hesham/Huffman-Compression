@@ -2,8 +2,8 @@ from compression import compress
 from decompression import decompress
 
 # For testing
-# compress("bee_movie_script.txt")
-# decompress("bee_movie_script.txt.compressed")
+# compress("Awaken.flac")
+# decompress("Awaken.flac.compressed")
 
 while True:
   print("Choose an option:")
