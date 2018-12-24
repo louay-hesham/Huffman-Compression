@@ -61,3 +61,6 @@ def decompress(filename):
     file.close()
   t2 = time.time() * 1000
   print("Time elapsed: " + str(t2 - t1) + " ms")
+
+def decompress_folder(foldername):
+  return 0;

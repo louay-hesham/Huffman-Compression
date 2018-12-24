@@ -97,7 +97,7 @@ def compress(filename):
 
   header = create_header(codes, len(binary_str))
   c_ratio = (len(bytes_data) + len(header)) / len(data)
-  print("Compression ratio = " + str(c_ratio * 100) + "%")
+  print("Compression ratio = %.2f" %(c_ratio * 100) + "%")
   with open(filename + ".compressed", "wb") as file:
     file.write(header)
     file.write(bytearray(bytes_data))
@@ -105,3 +105,5 @@ def compress(filename):
   t2 = time.time() * 1000
   print("Time elapsed: " + str(t2 - t1) + " ms")
     
+def compress_folder(foldername):
+  return 0;
