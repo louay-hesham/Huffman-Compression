@@ -1,14 +1,30 @@
-from compression import compress
-from decompression import decompress
+from compression import compress, compress_folder
+from decompression import decompress, decompress_folder
 
 # For testing
-# compress("bee_movie_script.txt")
-# decompress("bee_movie_script.txt.compressed")
+# filename = "HuffmanInput.txt"
+# compress(filename)
+# decompress(filename + ".compressed")
+
+# from os import listdir
+# from os.path import isfile, join
+# mypath = 'images/'
+# onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+
+# for f in onlyfiles:
+#   filename = mypath + f
+#   print(filename)
+#   compress(filename)
+#   decompress(filename + ".compressed")
+
+# Main code
 
 while True:
   print("Choose an option:")
   print("1- Compress a file")
   print("2- Decompress a file")
+  print("3- Compress a folder")
+  print("4- Decompress a folder")
   print("0- Exit")
   choice = input("Choice > ")
   if choice == '1':
@@ -17,6 +33,12 @@ while True:
   elif choice == '2':
     filename = input("Enter filename: ")
     decompress(filename)
+  if choice == '3':
+    foldername = input("Enter folder name: ")
+    compress_folder(foldername)
+  elif choice == '4':
+    foldername = input("Enter folder name: ")
+    decompress_folder(foldername)
   elif choice == '0':
     break
   else:
