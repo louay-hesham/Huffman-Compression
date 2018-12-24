@@ -33,7 +33,7 @@ while True:
   elif choice == '2':
     filename = input("Enter filename: ")
     decompress(filename)
-  if choice == '3':
+  elif choice == '3':
     foldername = input("Enter folder name: ")
     compress_folder(foldername)
   elif choice == '4':
