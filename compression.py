@@ -156,6 +156,7 @@ def compress(filename):
   print("Total time elapsed for compression: %.3f" %(t5 - t1) + " ms\n")
     
 def compress_folder(foldername):
+  t1 = time.time() * 1000
   onlyfiles = [f for f in listdir(foldername) if isfile(join(foldername, f))]
   total_data = {}
   for f in onlyfiles:
@@ -166,14 +167,25 @@ def compress_folder(foldername):
   total_folder_data = []
   for key, data in total_data.items():
     total_folder_data += data 
-
+  t2 = time.time() * 1000
   frequencies = count_characters_from_data(total_folder_data)
   codes = get_huffman_codes_from_frequencies(frequencies)
+  t3 = time.time() * 1000
   bytes_data, bits_lengths = encode_folder(total_folder_data, codes, [len(val) for key, val in total_data.items()])
+  t4 = time.time() * 1000
   header = create_folder_header(codes, bits_lengths, [key for key, val in total_data.items()])
+  t5 = time.time() * 1000
   c_ratio = (len(bytes_data) + len(header)) / len(total_folder_data)
   print("Compression ratio = %.2f" %(c_ratio * 100) + "%")
   with open(foldername[:-1] + ".compressed", "wb") as file:
     file.write(header)
     file.write(bytearray(bytes_data))
     file.close()
+  t6 = time.time() * 1000
+  print("Time to read folders: %d" %(t2 - t1) + " ms")
+  print("Time to generate huffman codes: %d" %(t3 - t2) + " ms")
+  print("Time to generate compressed binary data: %d" %(t4 - t3) + " ms")
+  print("Time to generate header: %d" %((t5 - t4) * 1000) + " ns")
+  print("Time to write compressed file to disk: %d" %((t6 - t5) * 1000) + " ns")
+  print("Total time elapsed for compression: %.3f" %(t6 - t1) + " ms\n")
+  
