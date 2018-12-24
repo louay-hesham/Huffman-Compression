@@ -1,11 +1,10 @@
 from heapq import *
 from frequency import Frequency
+from os import listdir
+from os.path import isfile, join
 import time
 
-def count_characters(filename):
-  with open(filename, "rb") as file:
-    data = file.read()
-    file.close()
+def count_characters_from_data(data):
   freq_dict = {}
   for byte in data:
     if byte in freq_dict:
@@ -16,7 +15,13 @@ def count_characters(filename):
   frequencies = []
   for key, value in freq_dict.items():
     frequencies.append(Frequency(key, value, None, None))
-  return frequencies, data
+  return frequencies
+
+def count_characters(filename):
+  with open(filename, "rb") as file:
+    data = file.read()
+    file.close()
+  return count_characters_from_data(data), data
 
 def build_min_heap(frequencies):
   min_heap = []
@@ -50,8 +55,7 @@ def set_code(node, codes_dict):
     node.right.code = node.code + "1"
     set_code(node.right, codes_dict)
 
-def get_huffman_codes(filename):
-  frequencies, data = count_characters(filename)
+def get_huffman_codes_from_frequencies(frequencies):
   root = build_huffman_tree(frequencies)
   huffman_codes_dict = {}
   set_code(root, huffman_codes_dict)
@@ -60,10 +64,26 @@ def get_huffman_codes(filename):
   for f in frequencies[::-1]:
     print(f)
   print("\n")
-  return huffman_codes_dict, data
+  return huffman_codes_dict
+
+def get_huffman_codes(filename):
+  frequencies, data = count_characters(filename)
+  return get_huffman_codes_from_frequencies(frequencies), data
 
 def bitstring_to_byte(s):
   return int(s, 2)
+
+def create_folder_header(codes, bits_length, filesnames):
+  header = filesnames[0].split('/')[0] # folder name
+  header += '?'
+  for i in range(0, len(bits_length)):
+    header += (filesnames[i].split('/')[1] + ':') # file name
+    header += (str(bits_length[i]) + '|')
+  header += '?'
+  for key, value in codes.items():
+    header += (str(key) + ':' + value + '#')
+  header += '~'
+  return bytearray(header.encode())
 
 def create_header(codes, bits_length):
   header = str(bits_length) + ';'
@@ -72,10 +92,32 @@ def create_header(codes, bits_length):
   header += '~'
   return bytearray(header.encode())
 
-def compress(filename):
-  t1 = time.time() * 1000
-  codes, data = get_huffman_codes(filename)
-  t2 = time.time() * 1000
+def encode_folder(total_folder_data, codes, files_lengths):
+  binary_str = ''
+  bytes_data = []
+  bits_lengths = []
+  count = 0
+  file_count = 0
+  i = 0
+  for byte in total_folder_data:
+    i += 1
+    binary_str += codes[byte]
+    count += len(codes[byte])
+    if i == files_lengths[file_count]:
+      bits_lengths.append(count)
+      i = 0
+      count = 0
+      file_count += 1
+    if len(binary_str) >= 8:
+      byte_str = binary_str[0:8]
+      bytes_data.append(bitstring_to_byte(byte_str))
+      binary_str = binary_str[8:]
+
+  if len(binary_str) < 8 and len(binary_str) > 0:
+    bytes_data.append(bitstring_to_byte(binary_str + '0'*(8 - len(binary_str))))
+  return bytes_data, bits_lengths
+
+def encode(data, codes):
   binary_str = ''
   bytes_data = []
   bits_length = 0
@@ -89,7 +131,13 @@ def compress(filename):
 
   if len(binary_str) < 8 and len(binary_str) > 0:
     bytes_data.append(bitstring_to_byte(binary_str + '0'*(8 - len(binary_str))))
+  return bytes_data, bits_length
 
+def compress(filename):
+  t1 = time.time() * 1000
+  codes, data = get_huffman_codes(filename)
+  t2 = time.time() * 1000
+  bytes_data, bits_length = encode(data, codes)
   t3 = time.time() * 1000
   header = create_header(codes, bits_length)
   t4 = time.time() * 1000
@@ -108,4 +156,24 @@ def compress(filename):
   print("Total time elapsed for compression: %.3f" %(t5 - t1) + " ms\n")
     
 def compress_folder(foldername):
-  return 0;
+  onlyfiles = [f for f in listdir(foldername) if isfile(join(foldername, f))]
+  total_data = {}
+  for f in onlyfiles:
+    filename = foldername + f
+    with open(filename, 'rb') as file:
+      total_data[filename] = file.read()
+      file.close()
+  total_folder_data = []
+  for key, data in total_data.items():
+    total_folder_data += data 
+
+  frequencies = count_characters_from_data(total_folder_data)
+  codes = get_huffman_codes_from_frequencies(frequencies)
+  bytes_data, bits_lengths = encode_folder(total_folder_data, codes, [len(val) for key, val in total_data.items()])
+  header = create_folder_header(codes, bits_lengths, [key for key, val in total_data.items()])
+  c_ratio = (len(bytes_data) + len(header)) / len(total_folder_data)
+  print("Compression ratio = %.2f" %(c_ratio * 100) + "%")
+  with open(foldername[:-1] + ".compressed", "wb") as file:
+    file.write(header)
+    file.write(bytearray(bytes_data))
+    file.close()
