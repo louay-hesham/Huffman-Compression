@@ -5,6 +5,9 @@ from decompression import decompress, decompress_folder
 # foldername = "test/"
 # compress_folder(foldername)
 # decompress_folder("test.compressed")
+# filename = "bee_movie_script.txt"
+# compress(filename)
+# decompress(filename + ".compressed")
 
 # Main code
 

@@ -1,5 +1,5 @@
 import time
-from os import mkdir
+import os
 
 def decode_header_folder_data(header):
   header_str = header.decode()
@@ -91,13 +91,15 @@ def decompress(filename):
   print("Time elapsed: " + str(t2 - t1) + " ms")
 
 def decompress_folder(foldername):
-  t1 = time.time() * 1000
+  t = time.time() * 1000
+  t1 = t
   codes, total_data, bits_lengths = decode_folder(foldername)
   total_binary_str = get_binary_string(codes, total_data)
   old_i = 0
   foldername = foldername.split('.')[0]
   foldername += '_decompressed'
-  mkdir(foldername)
+  if not os.path.isdir(foldername):
+    os.mkdir(foldername)
   for filename, bits_length in bits_lengths.items():
     bits_length = int(bits_length)
     binary_str = total_binary_str[old_i: old_i + bits_length]
@@ -109,5 +111,6 @@ def decompress_folder(foldername):
     with open(foldername + '/' + filename, 'wb') as file:
       file.write(decoded_data)
       file.close()
-    t2 = time.time() * 1000
-    print("Time elapsed: " + str(t2 - t1) + " ms")
+    print("Time elapsed to decompress " + filename + ": %.3f" %(time.time() * 1000 - t1) + " ms")
+    t1 = time.time() * 1000
+  print("Total time to decompress folder: %.3f" %(time.time() * 1000 - t) + " ms")
